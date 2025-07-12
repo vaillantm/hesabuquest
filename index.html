@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HesabuQuest • Offline Math Game</title>
+
+<style>
+/* HesabuQuest Dark Mode CSS */
+:root {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --accent: #4a9eff;
+  --accent-hover: #66b3ff;
+  --success: #4ade80;
+  --error: #f87171;
+  --warning: #fbbf24;
+  --border: #404040;
+  --shadow: rgba(0, 0, 0, 0.5);
+  --gradient-primary: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  --gradient-success: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  --gradient-error: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  --gradient-warning: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --gradient-card: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Navigation */
+.navbar {
+  background: var(--bg-secondary);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent);
+  text-shadow: 0 2px 4px var(--shadow);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.nav-link:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.stats-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.badges-nav {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.badges-nav:hover {
+  background: var(--warning);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Pages */
+.page {
+  display: none;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Welcome Card */
+.welcome-card {
+  background: var(--gradient-card);
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px var(--shadow);
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+/* Quiz Card */
+.quiz-card {
+  background: var(--gradient-card);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Question Header */
+.question-header {
+  margin-bottom: 2rem;
+}
+
+.question-counter {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+/* Question Text */
+.question-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* Choices Grid */
+.choices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.choice-btn {
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.choice-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.3);
+  border-color: var(--accent);
+}
+
+.choice-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.choice-btn.correct {
+  background: var(--gradient-success);
+  border-color: var(--success);
+  color: white;
+}
+
+.choice-btn.incorrect {
+  background: var(--gradient-error);
+  border-color: var(--error);
+  color: white;
+}
+
+/* Feedback */
+.feedback {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.feedback.correct {
+  background: rgba(74, 222, 128, 0.2);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.feedback.incorrect {
+  background: rgba(248, 113, 113, 0.2);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+/* Buttons */
+.play-btn {
+  background: var(--gradient-primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(74, 158, 255, 0.3);
+}
+
+.play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border);
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+/* Badges */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.badge-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid var(--border);
+}
+
+.badge-card.earned {
+  background: var(--gradient-card);
+  border-color: var(--success);
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.2);
+}
+
+.badge-card.locked {
+  background: var(--bg-tertiary);
+  border-color: var(--border);
+  opacity: 0.7;
+}
+
+.badge-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.badge-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Level Up Modal */
+.level-up-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.level-up-content {
+  background: var(--gradient-card);
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 40px var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 400px;
+  width: 90%;
+  animation: modalSlideIn 0.5s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.level-up-content h2 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.level-up-content p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .stats-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  
+  .welcome-card,
+  .quiz-card {
+    padding: 1.5rem;
+  }
+  
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .choices-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .badges-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+/* Focus Styles */
+button:focus,
+.nav-link:focus,
+.stat-item:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.badge-card.earned:hover {
+  animation: pulse 1s ease-in-out;
+}
+
+/* Toast Notifications (for badges) */
+.toast {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  background: var(--gradient-warning);
+  color: white;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  border: 1px solid var(--border);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+</style>
+ 
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="logo">🎮 HesabuQuest</div>
+
+    <div class="nav-links">
+      <div class="nav-link" onclick="showWelcome()">
+        🏠 <span>Home</span>
+      </div>
+    </div>
+
+    <div class="stats-nav">
+      <div class="stat-item">
+        <span>📊</span>
+        <span>Lvl <span id="level-display">1</span></span>
+      </div>
+      <div class="stat-item">
+        <span>⭐</span>
+        <span><span id="xp-display">0</span> XP</span>
+      </div>
+      <div class="stat-item badges-nav" onclick="showBadges()">
+        <span>🏆</span>
+        <span><span id="badges-display">0</span> Badges</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <!-- HOME / WELCOME PAGE -->
+    <div id="welcome" class="page active">
+      <div class="welcome-card">
+        <div class="welcome-title">🧠 Welcome to HesabuQuest!</div>
+        <div class="welcome-subtitle">
+          “Hesabu” means <strong>mathematics</strong> in Swahili, and “Quest” is your exciting journey of learning, solving, and leveling up.<br><br>
+          Play without internet, answer fun math questions, earn XP, and unlock awesome badges!
+⚡ This is a prototype! Just the beginning—more exciting features, tougher challenges, and new levels are on the way!
+        </div>
+        <div style="text-align:center; margin-bottom:1.5rem; font-weight:600;">🚀 Ready to Play?<br>Test your math skills and collect awesome badges!</div>
+        <button class="play-btn" onclick="startGame()">Start Quiz</button>
+      </div>
+    </div>
+
+    <!-- QUIZ PAGE -->
+    <div id="quiz" class="page">
+      <div class="quiz-card">
+        <div class="question-header">
+          <div class="question-counter">Question <span id="question-num">1</span> of <span id="total-questions">10</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="question-text" id="question-text">Loading…</div>
+        <div class="choices-grid" id="choices-grid"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+
+    <!-- BADGES PAGE -->
+    <div id="badges" class="page">
+      <div class="quiz-card">
+        <h2 style="text-align:center;margin-bottom:1.5rem;color:var(--primary);">🏆 Your Achievements</h2>
+        <div class="badges-grid" id="badges-grid"></div>
+        <div style="text-align:center;margin-top:2rem;">
+          <button class="btn-secondary" onclick="showWelcome()">Back to Game</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVEL‑UP MODAL -->
+  <div id="level-up-modal" class="level-up-modal" style="display:none;">
+    <div class="level-up-content">
+      <div style="font-size:4rem;margin-bottom:1rem;">🎉</div>
+      <h2 style="color:var(--primary);margin-bottom:1rem;">Level Up!</h2>
+      <p style="margin-bottom:2rem;">You've reached Level <span id="new-level">2</span>!</p>
+      <button class="play-btn" onclick="closeLevelUpModal()">Continue</button>
+    </div>
+  </div>
+
+  <!-- GAME LOGIC -->
+  <script>
+    /* ------------------------- QUESTIONS ------------------------- */
+    const questions = [
+      // Level 1 – add / subtract
+      { level: 1, text: "What is 2 + 2?", choices: ["3", "4", "5", "6"], answer: "4" },
+      { level: 1, text: "What is 5 - 3?", choices: ["1", "2", "3", "4"], answer: "2" },
+      { level: 1, text: "What is 8 - 4?", choices: ["3", "4", "5", "6"], answer: "4" },
+      { level: 1, text: "What is 3 + 5?", choices: ["7", "8", "9", "10"], answer: "8" },
+      { level: 1, text: "What is 9 - 6?", choices: ["2", "3", "4", "5"], answer: "3" },
+      // Level 2 – multiply / divide
+      { level: 2, text: "What is 6 × 7?", choices: ["42", "36", "48", "40"], answer: "42" },
+      { level: 2, text: "What is 81 ÷ 9?", choices: ["8", "9", "7", "6"], answer: "9" },
+      { level: 2, text: "What is 12 × 5?", choices: ["50", "60", "55", "65"], answer: "60" },
+      { level: 2, text: "What is 48 ÷ 6?", choices: ["8", "7", "9", "6"], answer: "8" },
+      { level: 2, text: "What is 9 × 4?", choices: ["35", "36", "37", "38"], answer: "36" },
+      // Level 3 – mixed / larger
+      { level: 3, text: "What is 15 + 27?", choices: ["41", "42", "43", "44"], answer: "42" },
+      { level: 3, text: "What is 45 - 18?", choices: ["26", "27", "28", "29"], answer: "27" },
+      { level: 3, text: "What is 12 × 11?", choices: ["121", "130", "132", "143"], answer: "132" },
+      { level: 3, text: "What is 81 ÷ 9?", choices: ["8", "9", "10", "11"], answer: "9" },
+      { level: 3, text: "What is 7 × 13?", choices: ["89", "90", "91", "92"], answer: "91" }
+    ];
+
+    /* --------------------------- BADGES -------------------------- */
+    const badgeDefinitions = [
+      { id:'first_answer',  name:'First Steps',      description:'Answer your first question',          icon:'🎯', requirement:1 },
+      { id:'ten_answers',   name:'Getting Started',  description:'Answer 10 questions correctly',       icon:'🔥', requirement:10 },
+      { id:'fifty_answers', name:'Math Enthusiast',  description:'Answer 50 questions correctly',       icon:'📚', requirement:50 },
+      { id:'hundred_answers', name:'Math Expert',    description:'Answer 100 questions correctly',      icon:'🧠', requirement:100 },
+      { id:'level_2',       name:'Level 2 Achiever', description:'Reach Level 2',                       icon:'⭐', requirement:2 },
+      { id:'level_3',       name:'Level 3 Achiever', description:'Reach Level 3',                       icon:'🌟', requirement:3 },
+      { id:'streak_5',      name:'On Fire!',         description:'Get 5 answers in a row',              icon:'🔥', requirement:5 },
+      { id:'streak_10',     name:'Unstoppable!',     description:'Get 10 answers in a row',             icon:'⚡', requirement:10 }
+    ];
+
+    /* ------------------------ GAME STATE ------------------------- */
+    const defaultState = {
+      level:1, xp:0,
+      correctAnswers:0, totalAnswers:0,
+      currentStreak:0, bestStreak:0,
+      badges:[],
+      sessionCorrect:0, sessionTotal:0
+    };
+
+    let gameState = loadGameState();
+    let currentQuestionIndex = 0;  // shows how many asked this level
+    let isAnswering = false;
+
+    /* ---------------------- STATE PERSISTENCE -------------------- */
+    function loadGameState(){
+      try{
+        const saved = JSON.parse(localStorage.getItem("hesabuquest_state"));
+        return saved ? {...defaultState, ...saved} : {...defaultState};
+      }catch{ return {...defaultState}; }
+    }
+    function saveGameState(){
+      localStorage.setItem("hesabuquest_state", JSON.stringify(gameState));
+    }
+
+    /* -------------------------- UI NAV --------------------------- */
+    function showWelcome(){
+      document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+      document.getElementById("welcome").classList.add("active");
+    }
+    function showQuiz(){
+      document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+      document.getElementById("quiz").classList.add("active");
+    }
+    function showBadges(){
+      document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+      document.getElementById("badges").classList.add("active");
+      renderBadges();
+    }
+
+    /* -------------------------- DISPLAY -------------------------- */
+    function updateDisplay(){
+      document.getElementById("level-display").textContent = gameState.level;
+      document.getElementById("xp-display").textContent    = gameState.xp;
+      document.getElementById("badges-display").textContent= gameState.badges.length;
+      saveGameState();
+    }
+
+    /* ----------------------- START / NEXT ------------------------ */
+    function startGame(){
+      currentQuestionIndex = 0;
+      showQuiz();
+      loadNextQuestion();
+    }
+    function loadNextQuestion(){
+      if(isAnswering) return;
+      const levelQs = questions.filter(q=>q.level===gameState.level);
+      if(levelQs.length===0){ levelUp(); return; }
+
+      const q = levelQs[Math.floor(Math.random()*levelQs.length)];
+      currentQuestionIndex++;
+
+      // update UI
+      document.getElementById("question-num").textContent = currentQuestionIndex;
+      document.getElementById("total-questions").textContent = Math.max(10, currentQuestionIndex);
+      document.getElementById("question-text").textContent = q.text;
+      document.getElementById("feedback").textContent = '';
+      document.getElementById("feedback").className = 'feedback';
+      document.getElementById("progress-fill").style.width = ((currentQuestionIndex%10)/10)*100 + '%';
+
+      const grid = document.getElementById("choices-grid");
+      grid.innerHTML='';
+      q.choices.forEach(choice=>{
+        const btn=document.createElement("button");
+        btn.className="choice-btn";
+        btn.textContent=choice;
+        btn.onclick=()=>selectAnswer(choice,q.answer,btn);
+        grid.appendChild(btn);
+      });
+    }
+
+    /* ----------------------- ANSWER LOGIC ------------------------ */
+    function selectAnswer(pick, correct, btn){
+      if(isAnswering) return;
+      isAnswering=true;
+      const buttons=document.querySelectorAll(".choice-btn");
+      buttons.forEach(b=>b.disabled=true);
+
+      const fb=document.getElementById("feedback");
+      const correctBtn=[...buttons].find(b=>b.textContent===correct);
+
+      if(pick===correct){
+        btn.classList.add("correct");
+        fb.textContent="🎉 Correct! +10 XP";
+        fb.className="feedback correct";
+
+        gameState.correctAnswers++;
+        gameState.currentStreak++;
+        gameState.sessionCorrect++;
+        gameState.xp += 10;
+        if(gameState.currentStreak>gameState.bestStreak) gameState.bestStreak=gameState.currentStreak;
+        checkBadgesAfterAnswer();
+      }else{
+        btn.classList.add("incorrect");
+        correctBtn.classList.add("correct");
+        fb.textContent="❌ Wrong! Correct answer: "+correct;
+        fb.className="feedback incorrect";
+        gameState.currentStreak=0;
+      }
+      gameState.totalAnswers++;
+      gameState.sessionTotal++;
+      updateDisplay();
+
+      if(gameState.xp>=gameState.level*100) levelUp();
+
+      setTimeout(()=>{ isAnswering=false; loadNextQuestion(); },2000);
+    }
+
+    /* ------------------------- BADGES --------------------------- */
+    function awardBadge(id){
+      if(!gameState.badges.includes(id)){
+        gameState.badges.push(id);
+        showBadgeToast(id);
+      }
+    }
+    function showBadgeToast(id){
+      const badge = badgeDefinitions.find(b=>b.id===id);
+      if(!badge) return;
+      const toast=document.createElement("div");
+      toast.style.cssText="position:fixed;top:90px;right:20px;background:linear-gradient(135deg,#ffd700,#fff176);padding:1rem 1.2rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.25);z-index:999;";
+      toast.innerHTML=`<div style="font-size:1.8rem;text-align:center;">${badge.icon}</div><div style="font-weight:700;text-align:center;">${badge.name}</div>`;
+      document.body.appendChild(toast);
+      setTimeout(()=>toast.remove(),3000);
+    }
+    function checkBadgesAfterAnswer(){
+      badgeDefinitions.forEach(b=>{
+        if(gameState.badges.includes(b.id)) return;
+        let earned=false;
+        if(b.id.includes('answer')) earned = gameState.correctAnswers>=b.requirement;
+        if(b.id==='streak_5') earned = gameState.currentStreak>=5;
+        if(b.id==='streak_10') earned = gameState.currentStreak>=10;
+        if(b.id.startsWith('level_')) earned = gameState.level>=b.requirement;
+        if(earned) awardBadge(b.id);
+      });
+    }
+    function renderBadges(){
+      const grid=document.getElementById("badges-grid");
+      grid.innerHTML='';
+      badgeDefinitions.forEach(b=>{
+        const earned=gameState.badges.includes(b.id);
+        const card=document.createElement("div");
+        card.className=`badge-card ${earned?'earned':'locked'}`;
+        card.innerHTML=`<div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div><div class="badge-description" style="font-size:0.8rem;">${b.description}</div>`;
+        if(!earned){
+          const progressText = b.id.includes('answer') ? `${gameState.correctAnswers}/${b.requirement}` :
+                               b.id.startsWith('level_') ? `Level ${gameState.level}/${b.requirement}` : '';
+          card.innerHTML += `<div style="margin-top:0.4rem;font-size:0.75rem;">${progressText}</div>`;
+        }
+        grid.appendChild(card);
+      });
+    }
+
+    /* ------------------------- LEVEL UP -------------------------- */
+    function levelUp(){
+      gameState.level++;
+      gameState.xp=0;
+      currentQuestionIndex=0;
+      awardBadge(`level_${gameState.level}`);
+      document.getElementById("new-level").textContent = gameState.level;
+      document.getElementById("level-up-modal").style.display='flex';
+      updateDisplay();
+    }
+    function closeLevelUpModal(){
+      document.getElementById("level-up-modal").style.display='none';
+      showWelcome();
+    }
+
+    /* ------------------------- INIT ------------------------------ */
+    function initGame(){
+      updateDisplay();
+      renderBadges();
+    }
+    initGame();
+  </script>
+</body>
+</html>
