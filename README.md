@@ -1,4 +1,4 @@
-HesabuQuest - An Offline Math Game for Curious Minds
+Prototype HesabuQuest - An Offline Math Game for Curious Minds
 
 HesabuQuest is an offline math game that aims to provide an engaging and educational experience for users. The project is hosted on GitHub and is available for anyone to access and play.
 
